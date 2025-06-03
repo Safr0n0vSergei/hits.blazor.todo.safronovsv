@@ -1,0 +1,38 @@
+@page "/items"
+@using BlazorItemApp.Models
+
+
+@foreach (var item in items)
+{
+    <div class="card mb-3 p-3">
+        <h5>@item.GetDetails()</h5>
+        <p>Цена: @item.OriginalPrice.ToString("C")</p>
+        <p>Скидка: @item.CalculateDiscount().ToString("C")</p>
+        <p>Цена после скидки: @item.Price.ToString("C")</p>
+    </div>
+}
+
+@code {
+    private List<Item> items;
+
+    protected override void OnInitialized()
+    {
+        items = new List<Item>
+        {
+            new SingleItem { ItemId = 1, Name = "Single Item", OriginalPrice = 100m, UnitMeasure = "шт"},
+            new PackageItem { ItemId = 2, Name = "Package Item", OriginalPrice = 200m, QuantityPerPackage = 5 },
+            new SpecialItem { ItemId = 3, Name = "Special Item", OriginalPrice = 300m, DiscountExpirationDate = DateTime.Now.AddDays(7) }
+        };
+
+        foreach (var item in items)
+        {
+            item.Price = item.OriginalPrice;
+        }
+
+        foreach (var item in items)
+        {
+            var discount = item.CalculateDiscount();
+            item.ApplyDiscount(discount);
+        }
+    }
+}
